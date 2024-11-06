@@ -4,8 +4,8 @@ from itertools import count
 
 ## Inspired by https://github.com/networkx/networkx/blob/main/networkx/algorithms/tree/mst.py
 # @nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
-def pamst(G, minimum=False, noise_lambda=1):
-    """Iterate over edges of Prim's algorithm min/max spanning tree.
+def pamst(G, noise_lambda=1):
+    """Iterate over edges of Prim's algorithm to return a MINIMUM spanning tree
     Primitive Implementation
 
     Parameters
@@ -18,14 +18,13 @@ def pamst(G, minimum=False, noise_lambda=1):
     """
     nodes = set(G)
     c = count()
-    sign = 1 if minimum else -1
 
     while nodes:
         u = nodes.pop()
         frontier = [ ]  # Creates a heap
         visited = { u } # set of visited vertices
         for v, d in G.adj[u].items():
-            wt = d.get("weight", 1) * sign
+            wt = d.get("weight", 1)
             frontier.append((wt, next(c),u,v,d)) # Is it slow?
 
         while nodes and frontier:
@@ -41,7 +40,7 @@ def pamst(G, minimum=False, noise_lambda=1):
             for w, d2 in G.adj[v].items():
                 if w in visited:
                     continue
-                new_weight = d2.get("weight", 1) * sign
+                new_weight = d2.get("weight", 1)
                 frontier.append((new_weight, next(c),v, w, d2))
 
 def report_noisy_max_zcdp(frontier, noise_lambda):
@@ -57,5 +56,5 @@ def report_noisy_max_zcdp(frontier, noise_lambda):
             else (noisy_value < noisy_max_edge[1])
         noisy_max_edge = noisy_max_edge if not is_new else (e, noisy_value)
     return noisy_max_edge[0]
-
-comp_mst_weight = lambda edges: sum(e[2]["weight"] for e in edges)
+def comp_mst_weight(edges):
+    return sum(e[2]["weight"] for e in edges)

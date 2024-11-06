@@ -1,7 +1,6 @@
+# !! DEPRECATED!! Not required, just for the sake of documentation.
 import math
 import numpy as np
-from itertools import count
-# DEPRECATED.
 class FastDPPQ:
     """
     Implements a novel Priority Queue that quickly allows sampling from the top group.
