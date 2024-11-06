@@ -18,7 +18,13 @@ Requirements are stored inside requirements.txt:
     pip install -r requirememts.txt
 
 
-Also feel free to use the environment in the IDE of your choice
+If jupyter does not instal, make sure to have pip in the latest version::
+
+    ~/.virtualenvs/priv-mst/bin/python -m ensurepip
+
+    ~/.virtualenvs/priv-mst/bin/python -m pip install pip --upgrade
+
+Also feel free to use the environment in the IDE of your choice. (might give some problems on WIN64 systems)
 
 
 Credits
