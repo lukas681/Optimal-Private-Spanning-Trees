@@ -1,0 +1,16 @@
+pip==19.2.3
+bump2version==0.5.11
+wheel==0.33.6
+watchdog==0.9.0
+tox==3.14.0
+coverage==4.5.4
+twine==5.0.0
+ruff==0.3.5
+numpy==2.0.2
+pandas==2.2.3
+seaborn==0.13.2
+networkx==3.2.1
+scikit-learn==1.5.2
+joblib==1.4.2
+matplotlib==3.9.2
+jupyter
