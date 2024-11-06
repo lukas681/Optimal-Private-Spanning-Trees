@@ -4,9 +4,11 @@ Optimal Private Minimum Spanning Trees using Output Perturbation
 
 
 Experiments with Privately Releasing Minimum Spanning Trees
+The main experiments are located at src/Notebooks
 
 Getting Started
 --------
+
 We use the following environment to run the experiments.
 Requirements are stored inside requirements.txt:
 
