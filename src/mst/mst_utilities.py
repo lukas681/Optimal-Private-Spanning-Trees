@@ -1,5 +1,6 @@
 import math
 import random
+import numpy as np
 import networkx as nx
 from networkx import Graph
 
@@ -24,17 +25,24 @@ def compute_real_mst_weight(G, alg='prim'):
         weight += d['weight']
     return weight
 
-def compute_input_perturbation(G, noise_level, noise_fkt):
+def compute_input_perturbation(G, noise_fkt):
     """
+    Implementation of Input Perturbation Mechanisms.
+    Covers our approach and Sealfon's postprocessing.
     """
-    G_copy = G.copy() ## Enables modification of edges = noise addition
-    noise_terms = {}
-    weight = 0
-    for (u, v, w) in G_copy.edges(data=True): # Takes care of symmetry
-        noise_terms[(u, v)] = noise_fkt(0, noise_level)
-        w['weight'] +=  noise_terms[(u,v)]
+    weights = 0
+    old_weights = {}
 
-    T  = nx.minimum_spanning_tree(G_copy, algorithm ='prim')
+    # Storing old values might be inefficient for large graphs, but we need them to restore to default
+    # as our mechanism is not just addive noise.
+    # + Avoids floating issues
+#    old_weights = {(u, v): w['weight'] for u, v, w in G.edges(data=True)}
+
+    for (u, v, w) in G.edges(data=True):
+        old_weights[(u,v)] = w['weight']
+        w['weight'] = noise_fkt(w['weight'])
+
+    T  = nx.minimum_spanning_tree(G, algorithm ='prim')
     for u,v,d in T.edges(data=True):
-        weight += (d['weight']-noise_terms[(u,v)] ) # subtracts the noise again.
-    return weight
+        weights += (old_weights[(u,v)]) # subtracts the noise again.
+    return weights
