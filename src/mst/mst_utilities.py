@@ -14,10 +14,22 @@ def generate_random_complete_graph(n):
     for (u, v, w) in G.edges(data=True):
         w['weight'] = random.random()
     return G
+def generate_hard_instance(n, E):
+    """
+    Generates the hard instance as described in [Sealfon 2016]
+    The graph constains of a center in the middle surrounded by triangles.
+    """
+    # G: Graph = nx.Graph(n + (n-1))
+    G: Graph = nx.Graph()
+    # Center = v_0
+    for i in range(1, 2*n+1):
+        G.add_edge(0, i,weight = (0 if i%2==0 else E))
+    for i in range(1, n+1):
+        G.add_edge(2*i-1, 2*(i), weight =  0)
+    return G
 
 def compute_real_mst_weight(G, alg='prim'):
     """
-
     """
     T  = nx.minimum_spanning_tree(G, algorithm = alg)
     weight = 0
@@ -25,7 +37,7 @@ def compute_real_mst_weight(G, alg='prim'):
         weight += d['weight']
     return weight
 
-def compute_input_perturbation(G, noise_fkt):
+def compute_input_perturbation(G, noise_fkt, alg='prim'):
     """
     Implementation of Input Perturbation Mechanisms.
     Covers our approach and Sealfon's postprocessing.
@@ -42,7 +54,7 @@ def compute_input_perturbation(G, noise_fkt):
         old_weights[(u,v)] = w['weight']
         w['weight'] = noise_fkt(w['weight'])
 
-    T  = nx.minimum_spanning_tree(G, algorithm ='prim')
+    T  = nx.minimum_spanning_tree(G, algorithm=alg)
     for u,v,d in T.edges(data=True):
         weights += (old_weights[(u,v)]) # subtracts the noise again.
     return weights
