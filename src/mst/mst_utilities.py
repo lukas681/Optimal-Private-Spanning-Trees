@@ -56,5 +56,5 @@ def compute_input_perturbation(G, noise_fkt, alg='prim'):
 
     T  = nx.minimum_spanning_tree(G, algorithm=alg)
     for u,v,d in T.edges(data=True):
-        weights += (old_weights[(u,v)]) # subtracts the noise again.
+        weights += (old_weights[(u,v)]) # MST on the ground graph
     return weights
