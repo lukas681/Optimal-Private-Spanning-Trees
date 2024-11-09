@@ -29,8 +29,8 @@ def generate_mi_instance(n, p):
             p00 = (1 + (1-2*p)**k)
             p10 = (1 - (1-2*p)**k)
             mi = 1/2 * p00 * np.log2(p00) + 1/2 * p10 * np.log2(p10)
-            A[i][j] = 1-mi # Minimum Spanning Tree Finds Max Mutual Information
-            A[j][i] = 1-mi
+            A[i][j] = -mi # Minimum Spanning Tree Finds Max Mutual Information
+            A[j][i] = -mi
     G: Graph = nx.from_numpy_array(A=A,parallel_edges=False, create_using=nx.Graph)
     return G
 def generate_hard_instance(n, E):
