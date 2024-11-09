@@ -5,7 +5,7 @@ import networkx as nx
 from networkx import Graph
 from .pamst import comp_mst_weight, pamst
 
-def generate_random_complete_graph(n):
+def generate_random_complete_graph(n, range = 1):
     """
     Generates a complete graph with uniformly drawn random weights
     """
@@ -13,7 +13,7 @@ def generate_random_complete_graph(n):
 
     # Initializing the Edge Weights
     for (u, v, w) in G.edges(data=True):
-        w['weight'] = random.random()
+        w['weight'] = random.random() * range
     return G
 
 def generate_mi_instance(n, p):
@@ -29,8 +29,8 @@ def generate_mi_instance(n, p):
             p00 = (1 + (1-2*p)**k)
             p10 = (1 - (1-2*p)**k)
             mi = 1/2 * p00 * np.log2(p00) + 1/2 * p10 * np.log2(p10)
-            A[i][j] = -mi # Minimum Spanning Tree Finds Max Mutual Information
-            A[j][i] = -mi
+            A[i][j] = 1-mi # Minimum Spanning Tree Finds Max Mutual Information
+            A[j][i] = 1-mi
     G: Graph = nx.from_numpy_array(A=A,parallel_edges=False, create_using=nx.Graph)
     return G
 def generate_hard_instance(n, E):
@@ -97,7 +97,6 @@ def compute(G, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, r
         results['pamst'] = []
         for rho in rho_values:
             noise_level = (1/2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
-            print("pamst: " + str(noise_level))
             pamst_edges = pamst(G, noise_scale=noise_level) # Gives an iterator which should only be executed once!
             results['pamst'] += [comp_mst_weight(pamst_edges)]
 
