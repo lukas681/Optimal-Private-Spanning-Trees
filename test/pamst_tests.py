@@ -15,10 +15,15 @@ class pamst_tests(unittest.TestCase):
         G = generate_random_complete_graph(n, 1)
         noise_level = lambda rho: (1/2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
 
-        rhos = range(1,1000000,5000)
+        rhos = range(1000000,10000000,10000)
         for rho in rhos:
-            edges = pamst(G, noise_level(rho))
-            print("Noise " + str(rho) + " " + str(sum(e[2]["weight"] for e in edges)))
+            scaling = noise_level(rho)
+            edges = pamst(G.copy(), scaling)
+            print("Noise Scaling " + str(scaling))
+            res = sorted(edges, key=lambda x: x[2].get("weight", 1))
+            print(res)
+            print("Noise " + str(rho) + ": Weight " + str(sum(e[2]["weight"] for e in res)))
+            print("\n")
         self.assertTrue(True)
 
 if __name__ == '__main__':

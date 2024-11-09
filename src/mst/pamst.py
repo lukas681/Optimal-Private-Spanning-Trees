@@ -50,7 +50,7 @@ def report_noisy_max(frontier, noise_scale):
         noise = np.random.exponential(noise_scale)
         found_new_max = (noisy_max_edge[1] is None) or (noise + e[0] > noisy_max_edge[1])
         noisy_max_edge = noisy_max_edge if not found_new_max \
-            else (e, noise)
+            else (e, noise + e[0])
     return noisy_max_edge[0]
 
 def comp_mst_weight(edges):
