@@ -89,28 +89,29 @@ def compute(G, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, r
 
     ### Real Spanning Tree ###
     # Simply make an array to make visualization easier
+    results['real'] = []
     if run_real:
         results['real'] = [compute_real_mst_weight(G)] * len(rho_values)
 
     ### Pinot's PAMST Algorithm ###
+    results['pamst'] = []
     if run_pamst:
-        results['pamst'] = []
         for rho in rho_values:
             noise_level = (1/2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
             pamst_edges = pamst(G, noise_scale=noise_level) # Gives an iterator which should only be executed once!
             results['pamst'] += [comp_mst_weight(pamst_edges)]
 
     ### Sealfon's Post Processing Technique ###
+    results['sealfon'] = []
     if run_sealfon:
-        results['sealfon'] = []
         for rho in rho_values:
             std_deviation = sensitivity * math.sqrt(G.number_of_edges() / (2*rho))
             gaussNoise = lambda edge_weight: edge_weight + np.random.normal(0, std_deviation)
             results['sealfon'] += [compute_input_perturbation(G.copy(), gaussNoise)]
 
     ### Finally: Our Approach ###
+    results['our'] = []
     if run_our:
-        results['our'] = []
         for rho in rho_values:
             noise_lambda = 2* 1/(sensitivity) * math.sqrt(2*rho/(n-1)) ## TODO: Check, whether 1/sensitivity is correct, Previously 2* sens+ rest
             expNoise = lambda edge_weight: np.log(np.random.exponential(1) ) + noise_lambda * edge_weight
