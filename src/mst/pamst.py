@@ -1,10 +1,11 @@
 import math
 import numpy as np
 from itertools import count
+from networkx import Graph
 
 ## Inspired by https://github.com/networkx/networkx/blob/main/networkx/algorithms/tree/mst.py
 # @nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
-def pamst(G, noise_scale=1):
+def pamst(G:Graph, noise_scale=1):
     """Iterate over edges of Prim's algorithm to return a MINIMUM spanning tree
     Primitive Implementation
 
@@ -25,7 +26,6 @@ def pamst(G, noise_scale=1):
             frontier.append((-wt, next(c),u,v,d))
         while nodes and frontier:
             W, z, u, v, d = report_noisy_max(frontier, noise_scale)
-            print()
             frontier.remove((W,z,u,v,d))
 
             if v in visited or v not in nodes:
