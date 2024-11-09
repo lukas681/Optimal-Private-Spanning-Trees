@@ -79,12 +79,12 @@ def compute_input_perturbation(G, noise_fkt, alg='prim'):
     return weights
 
 
-def compute(G, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
+def compute(G:Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
     """
     Allows to run a subset of MST algorithm
     Returns a dictionary containing keys 'sealfon','pamst', 'our' and 'real'
     """
-    n = G.number_of_edges()  # Does it work?
+    n = G.number_of_nodes()  # Does it work?
     results = {}
 
     ### Real Spanning Tree ###
@@ -98,7 +98,7 @@ def compute(G, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, r
     if run_pamst:
         for rho in rho_values:
             noise_level = (1/2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
-            pamst_edges = pamst(G, noise_scale=noise_level) # Gives an iterator which should only be executed once!
+            pamst_edges = pamst(G.copy(), noise_scale=noise_level) # Gives an iterator which should only be executed once!
             results['pamst'] += [comp_mst_weight(pamst_edges)]
 
     ### Sealfon's Post Processing Technique ###

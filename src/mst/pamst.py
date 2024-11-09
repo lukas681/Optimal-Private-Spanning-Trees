@@ -21,7 +21,7 @@ def pamst(G, noise_scale=1):
         frontier = [ ]  # Creates a heap
         visited = { u } # set of visited vertices
         for v, d in G.adj[u].items():
-            wt = d.get("weight", 1)
+            wt = d.get("weight",1)
             frontier.append((-wt, next(c),u,v,d))
         while nodes and frontier:
             W, z, u, v, d = report_noisy_max(frontier, noise_scale)
@@ -49,7 +49,6 @@ def report_noisy_max(frontier, noise_scale):
     for e in frontier:
         noise = np.random.exponential(noise_scale)
         found_new_max = (noisy_max_edge[1] is None) or (noise + e[0] > noisy_max_edge[1])
-
         noisy_max_edge = noisy_max_edge if not found_new_max \
             else (e, noise)
     return noisy_max_edge[0]
