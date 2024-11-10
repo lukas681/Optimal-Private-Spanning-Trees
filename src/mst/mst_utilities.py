@@ -113,7 +113,7 @@ def compute(G:Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=T
     results['our'] = []
     if run_our:
         for rho in rho_values:
-            noise_lambda = 2* 1/(sensitivity) * math.sqrt(2*rho/(n-1)) ## TODO: Check, whether 1/sensitivity is correct, Previously 2* sens+ rest
+            noise_lambda = math.sqrt(2*rho/(n-1)) / (2* sensitivity)
             expNoise = lambda edge_weight: np.log(np.random.exponential(1) ) + noise_lambda * edge_weight
             results['our'] += [compute_input_perturbation(G.copy(), expNoise, alg='prim')]
     return results
