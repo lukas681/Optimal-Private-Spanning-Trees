@@ -97,7 +97,7 @@ def compute(G:Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=T
     results['pamst'] = []
     if run_pamst:
         for rho in rho_values:
-            noise_level = (1/2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
+            noise_level = (2 * sensitivity * math.sqrt( (n-1)/(2 * rho))) # Should be ok
             pamst_edges = pamst(G.copy(), noise_scale=noise_level) # Gives an iterator which should only be executed once!
             results['pamst'] += [comp_mst_weight(pamst_edges)]
 

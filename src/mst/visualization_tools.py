@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 def plot_all(results, rho_values):
     fig, axs = plt.subplots(1, 2, figsize=(20, 10))  # 2x2 grid
-    fig.suptitle("$\\rho $z-cDP, $\\ell_\\infty$ neighboring")
+    fig.suptitle("$\\rho-$zcDP, $\\ell_\\infty$ neighboring")
     (sealfon, our, pamst, real) = (results['sealfon'], results['our'], results['pamst'], results['real'])
     # Error of the MST
     sns.lineplot(x=rho_values, y=sealfon, marker='o', label="Sealfon", ax=axs[0])
