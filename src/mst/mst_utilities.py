@@ -27,10 +27,9 @@ def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1):
     Generates a complete graph using the Erdos-Renyi Random Graph model G(n, p).
     Might be slower than the corresponding generate_random_complete_graph for p=1
 
+    :param max_edge_weight: Draws each edge weight from Uni(0, max_edge_weight)
     :param n: size of the graph
-    :param p: Adds edge w_e with probability $p$. Can be seen as a density parameter. 0 <= 0 <= 1
-    :param range: Draws each edge weight from Uni(0, range)
-    :return:
+    :return: Graph constructed from the desired parameters.
     """
     G = nx.Graph(name="erdos-renyi", )
     G.add_nodes_from(range(n))
