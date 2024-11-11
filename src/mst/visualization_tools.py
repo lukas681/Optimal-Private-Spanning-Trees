@@ -39,7 +39,11 @@ def init_plot(results, rho_values, title):
 
 def init_multiplot(all_results, rho_values, meta_params, columns=2):
 
-    number_of_rows = int(np.ceil(min(columns, len(all_results)) / columns))
+    number_of_rows = max(1,
+                         int(
+                             np.ceil(len(all_results)) / columns)
+    #np.ceil(min(columns, len(all_results)) / columns)
+                         ) + 1
     fig, axs = plt.subplots(number_of_rows, columns, figsize=(20, 17))  # Grid layout
     fig.suptitle(meta_params["title"])
 
@@ -49,15 +53,11 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
 
     for index, results in enumerate(all_results):
         (sealfon, our, pamst, real) = (results['sealfon'], results['our'], results['pamst'], results['real'])
-        # Error of the MST
-        # sns.lineplot(x=rho_values, y=sealfon, marker='o', label="Sealfon", ax=axs[index])
-        # sns.lineplot(x=rho_values, y=upper, marker='o', label="upperbound", ax=axs[0])
-        # sns.lineplot(x=rho_values, y=our, marker='o', label="$\\textbf{Our}$", ax=axs[index])
-        # sns.lineplot(x=rho_values, y=pamst, marker='o', label="PAMST", ax=axs[index])
-        # sns.lineplot(x=rho_values, y=real, marker='o', label="Real MST", ax=axs[index])
-        # axs[index].set_title("Absolute Weight of the MST")
+
         # Error of the MST
         (figureX, figureY) = (index // columns, index % columns)
+
+        axs[figureX][figureY].axis('on')
         sns.lineplot(x=rho_values, y=[sealfon - real for sealfon, real in zip(sealfon, real)], marker='o',
                      label="Sealfon",
                      ax=axs[figureX][figureY])
@@ -71,7 +71,6 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
         axs[figureX][figureY].set_title(title)
         axs[figureX][figureY].set_xlabel("$\\rho$")
         axs[figureX][figureY].set_ylabel("MST Error")
-        axs[figureX][figureY].axis('on')
 
         # axs[0].set_ylim([0,100])
         # axs[index].set_ylabel("Additive Error")
