@@ -2,7 +2,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def init_plot(results, rho_values):
+def init_plot(results, rho_values, title):
     """
     Requires a plt.show() later.
     :param results:
@@ -10,7 +10,7 @@ def init_plot(results, rho_values):
     :return:
     """
     fig, axs = plt.subplots(1, 2, figsize=(20, 10))  # 2x2 grid
-    fig.suptitle("$\\rho-$zcDP, $\\ell_\\infty$ neighboring")
+    fig.suptitle(title)
     (sealfon, our, pamst, real) = (results['sealfon'], results['our'], results['pamst'], results['real'])
     # Error of the MST
     sns.lineplot(x=rho_values, y=sealfon, marker='o', label="Sealfon", ax=axs[0])
