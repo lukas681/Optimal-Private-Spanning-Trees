@@ -128,10 +128,19 @@ def compute_input_perturbation(G, noise_fkt, alg='prim'):
     return weights
 
 
-def compute(G: Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
+def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
     """
-    Allows to run a subset of MST algorithm
+    The main entrypoint for the experiments.
+     Allows to run a subset of MST algorithm
     Returns a dictionary containing keys 'sealfon','pamst', 'our' and 'real'
+    :param G: NetworkX Graph
+    :param sensitivity: the $\ell_\infty$v sensitivity of the graph.
+    :param rho_values:
+    :param run_real: Flag indicating whether the REAL mst should be computed
+    :param run_sealfon: Flag indicating whether we run SEALFON's postprocessing alg.
+    :param run_pamst: Flag indicating whether to run PAMST
+    :param run_our: Flag indicating whether to run OUR approach
+    :return:
     """
     n = G.number_of_nodes()  # Does it work?
     results = {}

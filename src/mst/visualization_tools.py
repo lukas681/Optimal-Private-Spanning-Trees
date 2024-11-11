@@ -2,7 +2,13 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def plot_all(results, rho_values):
+def init_plot(results, rho_values):
+    """
+    Requires a plt.show() later.
+    :param results:
+    :param rho_values:
+    :return:
+    """
     fig, axs = plt.subplots(1, 2, figsize=(20, 10))  # 2x2 grid
     fig.suptitle("$\\rho-$zcDP, $\\ell_\\infty$ neighboring")
     (sealfon, our, pamst, real) = (results['sealfon'], results['our'], results['pamst'], results['real'])
@@ -29,7 +35,6 @@ def plot_all(results, rho_values):
     axs[1].set_ylabel("Additive Error")
 
     plt.legend(title="Comparing Private MST Algs")
-    plt.show()
 
 
 def convert_results(results):
