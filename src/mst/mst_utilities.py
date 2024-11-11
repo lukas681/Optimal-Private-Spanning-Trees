@@ -197,5 +197,4 @@ def save_results(results, filename="save/test.np"):
 
 
 def load_results(filename):
-    with open(filename, 'wb') as f:
-        return np.load(f)
+    return np.load(filename, allow_pickle=True)

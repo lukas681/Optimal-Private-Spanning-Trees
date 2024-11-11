@@ -71,6 +71,7 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
         axs[figureX][figureY].set_title(title)
         axs[figureX][figureY].set_xlabel("$\\rho$")
         axs[figureX][figureY].set_ylabel("MST Error")
+        axs[figureX][figureY].set_yscale("log")
 
         # axs[0].set_ylim([0,100])
         # axs[index].set_ylabel("Additive Error")
