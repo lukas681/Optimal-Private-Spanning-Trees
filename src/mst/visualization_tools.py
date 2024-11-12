@@ -66,17 +66,16 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
                      ax=axs[figureX][figureY])
         sns.lineplot(x=rho_values, y=[pamst - real for pamst, real in zip(results['pamst'], real)], marker='o',
                      label="PAMST", ax=axs[figureX][figureY])
-        title = "G({}, {})".format(meta_params['graph-size'], round(meta_params['edge_probabilities'][index], 1)
-                                   )
+        title = "G({}, {})".format(meta_params['graph-size'], round(meta_params['edge_probabilities'][index], 1))
         axs[figureX][figureY].set_title(title)
         axs[figureX][figureY].set_xlabel("$\\rho$")
         axs[figureX][figureY].set_ylabel("MST Error")
         axs[figureX][figureY].set_yscale("log")
-
         # axs[0].set_ylim([0,100])
         # axs[index].set_ylabel("Additive Error")
 
 #     plt.legend(title="Comparing Private MST Algs")
+    return (fig, axs)
 
 
 def convert_results(results):

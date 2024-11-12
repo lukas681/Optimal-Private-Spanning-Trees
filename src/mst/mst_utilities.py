@@ -191,7 +191,7 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
     return results
 
 
-def save_results(results, filename="save/test.np"):
+def save_results(results, filename="save/test.npy"):
     with open(filename, 'wb') as f:
         np.save(f, results)
 
