@@ -36,12 +36,12 @@ def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1):
     :return: Graph constructed from the desired parameters.
     """
     G = nx.Graph()
-    G.add_nodes_from(range(n)) # Is htis slow?
+    G.add_nodes_from(range(n)) # How slow is this?
 
     for i in range(0, n):
         for j in range(0, i):
             if random.random() < p:
-                G.add_edge(i, j, weight=random.random())
+                G.add_edge(i, j, weight=1)
 
     # Initializing the Edge Weights
     for (u, v, w) in G.edges(data=True):
@@ -191,10 +191,3 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
     return results
 
 
-def save_results(results, filename="save/test.npy"):
-    with open(filename, 'wb') as f:
-        np.save(f, results)
-
-
-def load_results(filename):
-    return np.load(filename, allow_pickle=True)
