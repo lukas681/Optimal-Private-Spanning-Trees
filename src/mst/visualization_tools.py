@@ -28,7 +28,7 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
     number_of_rows = max(1,
                          int(
                              np.ceil(len(all_results)) / columns)) + 1
-    fig, axs = plt.subplots(number_of_rows, columns, figsize=(20, 17))  # Grid layout
+    fig, axs = plt.subplots(number_of_rows, columns, figsize=(20, 20))  # Grid layout
     fig.suptitle(meta_params["title"])
 
     # we only want to see used axes
