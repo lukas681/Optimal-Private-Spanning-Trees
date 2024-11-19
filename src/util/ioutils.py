@@ -13,7 +13,7 @@ def save_results(results, filename="save/test.npy"):
         np.savez(f, **results)
 
 def save_plot_and_data_experiment_one(results_complete, edge_probabilities, rho_values, n, maximum_edge_weight, sensitivity):
-    file_name = "save/complete_n{}_sens{}_range0-{}".format(n, sensitivity, maximum_edge_weight)
+    file_name = f'save/complete_n{n}_sens{sensitivity}_range0-{maximum_edge_weight}'
     save_results(filename=file_name + ".npy", results=
     {
         "results": results_complete,
@@ -27,7 +27,7 @@ def save_plot_and_data_experiment_one(results_complete, edge_probabilities, rho_
     plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
 
 def save_plot_and_data_experiment_two(results_complete, rho_values, n, sensitivity):
-    file_name = "save/mutual-information_n{}_sens{}".format(n, sensitivity)
+    file_name = f'save/mutual-information_n{n}_sens{sensitivity}'
     save_results(filename=file_name + ".npy", results=
     {
         "results": results_complete,
@@ -37,9 +37,6 @@ def save_plot_and_data_experiment_two(results_complete, rho_values, n, sensitivi
     })
     plt.savefig(file_name + ".png")
     plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
-
-
-
 
 def load_results(filename):
     return np.load(filename, allow_pickle=True)
