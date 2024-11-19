@@ -12,8 +12,7 @@ def save_results(results, filename="save/test.npy"):
     with open(filename, 'wb') as f:
         np.savez(f, **results)
 
-def save_plot_and_data_experiment_one(results_complete, edge_probabilities, rho_values, n, maximum_edge_weight, sensitivity):
-    file_name = f'save/complete_n{n}_sens{sensitivity}_range0-{maximum_edge_weight}'
+def save_plot_and_data_experiment_one(file_name, results_complete, edge_probabilities, rho_values, n, maximum_edge_weight, sensitivity):
     save_results(filename=file_name + ".npy", results=
     {
         "results": results_complete,

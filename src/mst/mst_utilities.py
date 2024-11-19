@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 
-from time import perf_counter
+from time import perf_counter_ns, perf_counter
 import math
 import random
 import numpy as np
@@ -35,6 +35,7 @@ def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1):
     :param n: size of the graph
     :return: Graph constructed from the desired parameters.
     """
+    start = perf_counter_ns()
     G = nx.Graph()
     G.add_nodes_from(range(n)) # How slow is this?
 
@@ -46,6 +47,7 @@ def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1):
     # Initializing the Edge Weights
     for (u, v, w) in G.edges(data=True):
         w['weight'] = random.random() * max_edge_weight
+    logger.debug(f'Initialization took: {perf_counter_ns() - start}')
     return G
 
 
@@ -131,6 +133,7 @@ def compute_input_perturbation(G, noise_fkt, alg='prim'):
     return weights
 
 
+
 def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
     """
     The main entrypoint for the experiments.
@@ -151,41 +154,67 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
     ### Real Spanning Tree ###
     # Simply make an array to make visualization easier
     results['real'] = []
-    start = perf_counter()
+    start = perf_counter_ns()
     if run_real:
         results['real'] = [compute_real_mst_weight(G)] * len(rho_values)
-    logger.debug(f'computing the real MST took: {perf_counter() - start}')
-
+    logger.debug(f'computing the real MST took: {perf_counter_ns() - start}')
 
     ### Pinot's PAMST Algorithm ###
     results['pamst'] = []
     if run_pamst:
         for rho in rho_values:
-            start = perf_counter()
+            start = perf_counter_ns()
             noise_level = (2 * sensitivity * math.sqrt((n - 1) / (2 * rho)))  # Should be ok
             pamst_edges = pamst(G.copy(),
                                 noise_scale=noise_level)  # Gives an iterator which should only be executed once!
-            logger.debug(f'computing PAMST MST took: {perf_counter() - start}')
             results['pamst'] += [comp_mst_weight(pamst_edges)]
+            logger.debug(f'computing PAMST MST took: {perf_counter_ns() - start}')
 
     ### Sealfon's Post Processing Technique ###
     results['sealfon'] = []
     if run_sealfon:
         for rho in rho_values:
-            start = perf_counter()
+            start = perf_counter_ns()
             std_deviation = sensitivity * math.sqrt(G.number_of_edges() / (2 * rho))
             gaussNoise = lambda edge_weight: edge_weight + np.random.normal(0, std_deviation)
-            logger.debug(f'computing SEALFON took: {perf_counter() - start}')
-
             results['sealfon'] += [compute_input_perturbation(G.copy(), gaussNoise)]
+            logger.debug(f'computing SEALFON took: {perf_counter_ns() - start}')
 
     ### Finally: Our Approach ###
     results['our'] = []
     if run_our:
         for rho in rho_values:
-            start = perf_counter()
+            start = perf_counter_ns()
             noise_lambda = math.sqrt(2 * rho / (n - 1)) / (2 * sensitivity)
             expNoise = lambda edge_weight: np.log(np.random.exponential(1)) + noise_lambda * edge_weight
-            logger.debug(f'computing OUR APPROACH took: {perf_counter() - start}')
             results['our'] += [compute_input_perturbation(G.copy(), expNoise, alg='prim')]
+            logger.debug(f'computing OUR APPROACH took: {perf_counter_ns() - start}')
+    return results
+
+def compute_different_densities_approximate_dp(n, edge_probabilities, sensitivity, maximum_edge_weight, rho, number_of_runs=1):
+    """
+    Generates a G(n, p) random graph with random edge weights from Uni(0, maximum_edge_weight).
+    Then runs all algorithms number_of_runs times.
+
+    :param n: Size of the graph to test
+    :param edge_probabilities: list of probabilities of edges to test, densitiv
+    :param sensitivity:
+    :param maximum_edge_weight:
+    :param number_of_runs: number of runs per instance
+    :param rho: Privacy level in $\rho$-zCDP
+    :return: primitive list with all datapoints. Made easy to parse by matplotloib / seaborn
+    """
+    results = []
+    for edge_p in edge_probabilities:
+        logger.debug(f'working on G({n},{edge_p})')
+        if edge_p < np.log2(n)/n: logger.warning("Graph might not be connected as p < log(n)/n!")
+        for i in range(1, number_of_runs+1):
+            G = generate_random_erdos_reny_graph(n, p=edge_p, max_edge_weight=maximum_edge_weight)
+            start = perf_counter_ns()
+            res = compute_approximate_dp(G=G, sensitivity=sensitivity, rho_values=rho)
+            for key in res:
+                logger.debug(dict(p=edge_p, type=key, value=res[key][0]))
+                results += [(dict(p=edge_p, type=key, value=res[key][0]))]
+            logger.debug(f'run finished after {perf_counter_ns() - start}ms')
+    logger.info("computation complete. Initializing the plots.")
     return results
