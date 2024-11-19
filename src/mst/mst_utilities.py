@@ -7,8 +7,7 @@ import random
 import numpy as np
 import networkx as nx
 from networkx import Graph
-from .pamst import comp_mst_weight, pamst
-
+import pamst as pt
 
 def generate_random_complete_graph(n, upper=1):
     """
@@ -165,9 +164,9 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
         for rho in rho_values:
             start = perf_counter_ns()
             noise_level = (2 * sensitivity * math.sqrt((n - 1) / (2 * rho)))  # Should be ok
-            pamst_edges = pamst(G.copy(),
+            pamst_edges = pt.pamst(G.copy(),
                                 noise_scale=noise_level)  # Gives an iterator which should only be executed once!
-            results['pamst'] += [comp_mst_weight(pamst_edges)]
+            results['pamst'] += [pt.comp_mst_weight(pamst_edges)]
             logger.debug(f'computing PAMST MST took: {perf_counter_ns() - start}')
 
     ### Sealfon's Post Processing Technique ###
@@ -215,6 +214,6 @@ def compute_different_densities_approximate_dp(n, edge_probabilities, sensitivit
             for key in res:
                 logger.debug(dict(p=edge_p, type=key, value=res[key][0]))
                 results += [(dict(p=edge_p, type=key, value=res[key][0]))]
-            logger.debug(f'run finished after {perf_counter_ns() - start}ms')
+            logger.debug(f'A complete run finshed after {perf_counter_ns() - start}ms')
     logger.info("computation complete. Initializing the plots.")
     return results

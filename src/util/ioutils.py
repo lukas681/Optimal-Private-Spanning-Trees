@@ -1,5 +1,8 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 def encode_experiment_one(results, edge_probabilites, rho_values, n, maximum_edge_weight, sensitivity):
     return
 def save_results(results, filename="save/test.npy"):
@@ -38,4 +41,5 @@ def save_plot_and_data_experiment_two(results_complete, rho_values, n, sensitivi
     plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
 
 def load_results(filename):
+    logger.debug(f'Loading from disk. file {filename}')
     return np.load(filename, allow_pickle=True)

@@ -42,7 +42,6 @@ def pamst(G:Graph, noise_scale=1):
                     continue
                 new_weight = d2.get("weight", 1)
                 frontier[(v, w)] = (-new_weight, next(c), d2)
-#                frontier.append((-new_weight, next(c),v, w, d2))
 
 def report_noisy_max(frontier, noise_scale):
     """
