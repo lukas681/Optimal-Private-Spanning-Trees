@@ -61,6 +61,26 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
     plt.subplots_adjust(hspace = 0.4)
     return (fig, axs)
 
+def init_plot_densities(aggregated_data, meta_params):
+    """
+    Plotting the effect of the density
+    :param aggregated_data:
+    :param meta_params:
+    :return:
+    """
+    n, max_edge_weight = meta_params['n'], meta_params['max_edge_weight']
+
+    plt.figure(figsize=(10, 6))
+    for type_name, group in aggregated_data.groupby('type'):
+        plt.plot(group['p'], group['mean'], label=type_name)
+        plt.fill_between(group['p'], group['mean'] - group['std'], group['mean'] + group['std'], alpha=0.2)
+
+    plt.title(f'G({n}, p), $w_e \\sim U(0, {max_edge_weight})$')
+    plt.xlabel("density $p$")
+    plt.ylabel("MST Weight")
+    plt.legend()
+    plt.grid(True)
+    plt.show()
 
 def convert_results(results):
     return ([i * -1 for i in results['sealfon']],

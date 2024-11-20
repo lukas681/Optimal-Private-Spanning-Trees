@@ -7,7 +7,7 @@ import random
 import numpy as np
 import networkx as nx
 from networkx import Graph
-import pamst as pt
+import src.mst.pamst as pt
 
 def generate_random_complete_graph(n, upper=1):
     """
