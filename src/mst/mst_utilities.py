@@ -25,28 +25,32 @@ def generate_random_complete_graph(n, upper=1):
     return G
 
 
-def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1):
+def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1, force_connected=True):
     """
     Generates a complete graph using the Erdos-Renyi Random Graph model G(n, p).
     Might be slower than the corresponding generate_random_complete_graph for p=1
 
     :param max_edge_weight: Draws each edge weight from Uni(0, max_edge_weight)
     :param n: size of the graph
+    :param force_connected: Force a connected instance. Will just run again if it is not
     :return: Graph constructed from the desired parameters.
     """
     start = perf_counter_ns()
     G = nx.Graph()
-    G.add_nodes_from(range(n)) # How slow is this?
+    while True:
+        G.add_nodes_from(range(n)) # How slow is this?
 
-    for i in range(0, n):
-        for j in range(0, i):
-            if random.random() < p:
-                G.add_edge(i, j, weight=1)
+        for i in range(0, n):
+            for j in range(0, i):
+                if random.random() < p:
+                    G.add_edge(i, j, weight=1)
 
-    # Initializing the Edge Weights
-    for (u, v, w) in G.edges(data=True):
-        w['weight'] = random.random() * max_edge_weight
-    logger.debug(f'Initialization took: {perf_counter_ns() - start}')
+        # Initializing the Edge Weights
+        for (u, v, w) in G.edges(data=True):
+            w['weight'] = random.random() * max_edge_weight
+        logger.debug(f'Initialization took: {perf_counter_ns() - start}')
+        if nx.is_connected(G) or not force_connected:
+            break
     return G
 
 
@@ -207,13 +211,14 @@ def compute_different_densities_approximate_dp(n, edge_probabilities, sensitivit
     for edge_p in edge_probabilities:
         logger.debug(f'working on G({n},{edge_p})')
         if edge_p < np.log2(n)/n: logger.warning("Graph might not be connected as p < log(n)/n!")
+        G = generate_random_erdos_reny_graph(n, p=edge_p, max_edge_weight=maximum_edge_weight)
         for i in range(1, number_of_runs+1):
-            G = generate_random_erdos_reny_graph(n, p=edge_p, max_edge_weight=maximum_edge_weight)
             start = perf_counter_ns()
             res = compute_approximate_dp(G=G, sensitivity=sensitivity, rho_values=rho)
             for key in res:
-                logger.debug(dict(p=edge_p, type=key, value=res[key][0]))
-                results += [(dict(p=edge_p, type=key, value=res[key][0]))]
+                real_mst = res['real'][0] # normalization
+                logger.debug(dict(p=edge_p, type=key, value=res[key][0]/real_mst))
+                results += [(dict(p=edge_p, type=key, value=res[key][0]/real_mst))]
             logger.debug(f'A complete run finshed after {perf_counter_ns() - start}ms')
     logger.info("computation complete. Initializing the plots.")
     return results

@@ -61,7 +61,7 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
     plt.subplots_adjust(hspace = 0.4)
     return (fig, axs)
 
-def init_plot_densities(aggregated_data, meta_params):
+def init_plot_densities(df, meta_params):
     """
     Plotting the effect of the density
     :param aggregated_data:
@@ -71,13 +71,21 @@ def init_plot_densities(aggregated_data, meta_params):
     n, max_edge_weight = meta_params['n'], meta_params['max_edge_weight']
 
     plt.figure(figsize=(10, 6))
-    for type_name, group in aggregated_data.groupby('type'):
-        plt.plot(group['p'], group['mean'], label=type_name)
-        plt.fill_between(group['p'], group['mean'] - group['std'], group['mean'] + group['std'], alpha=0.2)
 
-    plt.title(f'G({n}, p), $w_e \\sim U(0, {max_edge_weight})$')
+    aggregated = df.groupby(['p', 'type'])['value'].agg(['median', 'min', 'max']).reset_index()
+
+    for type_name, group in aggregated.groupby('type'):
+        plt.plot(group['p'], group['median'], label=f'{type_name}', linewidth=1.5, marker="o", linestyle='-')  # Dashed line for distinctiveness
+        plt.fill_between(group['p'], group['min'], group['max'], alpha=0.2)  # Matching fill color
+
+
+    # Add gridlines for readability
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.title(f'$G({n}, p)$ where $w_e \\sim U(0, {max_edge_weight})$ \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$ and $\\rho = {meta_params["rho"]}$')
+
     plt.xlabel("density $p$")
     plt.ylabel("MST Weight")
+    plt.xscale('log')
     plt.legend()
     plt.grid(True)
     plt.show()
