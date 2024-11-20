@@ -216,9 +216,8 @@ def compute_different_densities_approximate_dp(n, edge_probabilities, sensitivit
             start = perf_counter_ns()
             res = compute_approximate_dp(G=G, sensitivity=sensitivity, rho_values=rho)
             for key in res:
-                real_mst = res['real'][0] # normalization
-                logger.debug(dict(p=edge_p, type=key, value=res[key][0]/real_mst))
-                results += [(dict(p=edge_p, type=key, value=res[key][0]/real_mst))]
+                logger.debug(dict(p=edge_p, type=key, value=res[key][0]))
+                results += [(dict(p=edge_p, type=key, value=res[key][0]))]
             logger.debug(f'A complete run finshed after {perf_counter_ns() - start}ms')
     logger.info("computation complete. Initializing the plots.")
     return results

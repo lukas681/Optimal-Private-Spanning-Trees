@@ -61,6 +61,25 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
     plt.subplots_adjust(hspace = 0.4)
     return (fig, axs)
 
+def normalize(df):
+    """
+    Very specific function. Normalized sealfon, our and pamst to divide it by the real weight.
+    This is very specific to our use case.
+    :param df:
+    :return:
+    """
+    # Dict with actual real mst weights
+    real_values = (df[df['type'] == 'real'][['p', 'value']]
+                   .rename(columns={'value': 'real_value'}))
+    # Merge real values back into the main DataFrame
+    df_intermediate = df.merge(real_values, on='p')
+
+    df_intermediate['normalized_value'] = df_intermediate.apply(
+        lambda row: row['value'] / row['real_value'] if row['type'] != 'real' else row['value'], axis=1
+    )
+    return df_intermediate
+
+
 def init_plot_densities(df, meta_params):
     """
     Plotting the effect of the density
@@ -71,7 +90,7 @@ def init_plot_densities(df, meta_params):
     n, max_edge_weight = meta_params['n'], meta_params['max_edge_weight']
 
     plt.figure(figsize=(10, 6))
-
+    df = normalize(df)
     aggregated = df.groupby(['p', 'type'])['value'].agg(['median', 'min', 'max']).reset_index()
 
     for type_name, group in aggregated.groupby('type'):
