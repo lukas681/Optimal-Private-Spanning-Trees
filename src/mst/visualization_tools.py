@@ -63,20 +63,16 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
 
 def normalize(df):
     """
-    Very specific function. Normalized sealfon, our and pamst to divide it by the real weight.
+    Very specific function. Adds a normlazed value to df.
+    Normalized sealfon, our and pamst to divide it by the real weight.
     This is very specific to our use case.
     :param df:
     :return:
     """
-    # Dict with actual real mst weights
-    real_values = (df[df['type'] == 'real'][['p', 'value']]
-                   .rename(columns={'value': 'real_value'}))
-    # Merge real values back into the main DataFrame
+    # Extract the 'real' values for each 'p'
+    real_values = df[df['type'] == 'real'][['p', 'value']].rename(columns={'value': 'real_value'})
     df_intermediate = df.merge(real_values, on='p')
-
-    df_intermediate['normalized_value'] = df_intermediate.apply(
-        lambda row: row['value'] / row['real_value'] if row['type'] != 'real' else row['value'], axis=1
-    )
+    df_intermediate['normalized_value'] = df_intermediate['value'] / df_intermediate['real_value']
     return df_intermediate
 
 
@@ -89,19 +85,16 @@ def init_plot_densities(df, meta_params):
     """
     n, max_edge_weight = meta_params['n'], meta_params['max_edge_weight']
 
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 8))
     df = normalize(df)
-    aggregated = df.groupby(['p', 'type'])['value'].agg(['median', 'min', 'max']).reset_index()
+    aggregated = df.groupby(['p', 'type'])['normalized_value'].agg(['median', 'min', 'max']).reset_index()
 
     for type_name, group in aggregated.groupby('type'):
         plt.plot(group['p'], group['median'], label=f'{type_name}', linewidth=1.5, marker="o", linestyle='-')  # Dashed line for distinctiveness
         plt.fill_between(group['p'], group['min'], group['max'], alpha=0.2)  # Matching fill color
-
-
     # Add gridlines for readability
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.title(f'$G({n}, p)$ where $w_e \\sim U(0, {max_edge_weight})$ \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$ and $\\rho = {meta_params["rho"]}$')
-
     plt.xlabel("density $p$")
     plt.ylabel("MST Weight")
     plt.xscale('log')
