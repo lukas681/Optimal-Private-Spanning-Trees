@@ -96,7 +96,7 @@ def init_plot_densities(df, meta_params):
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.title(f'$G({n}, p)$ where $w_e \\sim U(0, {max_edge_weight})$ \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$ and $\\rho = {meta_params["rho"]}$')
     plt.xlabel("density $p$")
-    plt.ylabel("MST Weight")
+    plt.ylabel("Normalized Weights")
     plt.xscale('log')
     plt.legend()
     plt.grid(True)
