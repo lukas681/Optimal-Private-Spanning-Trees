@@ -16,13 +16,12 @@ def init_plot(results, rho_values, meta_params):
     (sealfon, our, pamst, real) = (results['sealfon'], results['our'], results['pamst'], results['real'])
     sns.lineplot(x=rho_values, y=[sealfon - real for sealfon, real in zip(sealfon, real)], marker='o', label="Sealfon",
                  ax=ax)
-    sns.lineplot(x=rho_values, y=[ours - real for ours, real in zip(our, real)], marker='o', label="$\\textbf{Our}$",
-                ax=ax)
+    sns.lineplot(x=rho_values, y=[ours - real for ours, real in zip(our, real)], marker='o', label="$\\textbf{Our}$",            ax=ax)
     sns.lineplot(x=rho_values, y=[pamst - real for pamst, real in zip(results['pamst'], real)], marker='o',
                  label="PAMST", ax=ax)
     ax.set_ylabel("Additive Error")
     # plt.legend(title="Comparing Private MST ")
-   # plt.subplots_adjust(hspace = 0.4)
+# plt.subplots_adjust(hspace = 0.4)
 
 def init_multiplot(all_results, rho_values, meta_params, columns=2):
     number_of_rows = max(1,
@@ -54,9 +53,9 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
         axs[figureX][figureY].set_title(title)
         axs[figureX][figureY].set_xlabel("$\\rho$")
         axs[figureX][figureY].set_ylabel("MST Error")
-       # axs[figureX][figureY].set_yscale("log")
-        # axs[0].set_ylim([0,100])
-        # axs[index].set_ylabel("Additive Error")
+    # axs[figureX][figureY].set_yscale("log")
+    # axs[0].set_ylim([0,100])
+    # axs[index].set_ylabel("Additive Error")
 
     plt.subplots_adjust(hspace = 0.4)
     return (fig, axs)
@@ -76,7 +75,7 @@ def normalize(df):
     return df_intermediate
 
 
-def init_plot_densities(df, meta_params):
+def init_plot_densities(df, meta_params, minx):
     """
     Plotting the effect of the density
     :param aggregated_data:
@@ -95,12 +94,17 @@ def init_plot_densities(df, meta_params):
     # Add gridlines for readability
     plt.grid(True, linestyle='--', alpha=0.7)
     plt.title(f'$G({n}, p)$ where $w_e \\sim U(0, {max_edge_weight})$ \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$ and $\\rho = {meta_params["rho"]}$')
+
+    desired_ticks = [minx, 10**-1, 10**0]
+    #    plt.xscale('log')
+    ax = plt.gca()
+    ax.set_xscale('log')
+    ax.set_xticks(desired_ticks)
+
     plt.xlabel("density $p$")
     plt.ylabel("Normalized Weights")
-    plt.xscale('log')
     plt.legend()
     plt.grid(True)
-    plt.show()
 
 def convert_results(results):
     return ([i * -1 for i in results['sealfon']],
