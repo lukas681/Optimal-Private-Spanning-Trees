@@ -1,8 +1,51 @@
 import seaborn as sns
+
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
+def prepare_data_exp_three(results, rho_values):
+    """
+    Highly specialst utility function.
+    :param results:
+    :rho_values: The range of rho values
+    :return:
+    """
 
+    mi_results = []
+    for ix, p in enumerate(rho_values): # Try to inline this!
+        for i in range(len(results)):
+            for k in results[i].keys():
+                mi_results += [(dict(rho=p, alg=k, value=results[i][k][ix]))]
+    return pd.DataFrame(list(mi_results))
 
+def init_plot_exp_three(df, meta_params):
+    """
+    Visualizes the experiment with the
+    :param df:
+    :param meta_params:
+    :return:
+    """
+
+    plt.figure(figsize=(12, 8))
+    aggregated = df.groupby(['rho', 'alg'])['value'].agg(['median', 'min', 'max']).reset_index()
+    for alg_name, group in aggregated.groupby('alg'):
+        plt.plot(group['rho'], group['median'], label=f'{alg_name}', linewidth=1.5, marker="o", linestyle='-')  # Dashed line for distinctiveness
+        plt.fill_between(group['rho'], group['min'], group['max'], alpha=0.2)  # Matching fill color
+
+    plt.grid(True, linestyle='--', alpha=0.7)
+    plt.title(f'Mutual Information Graph with  \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$')
+
+#    desired_ticks = [minx, 10**-1, 10**0]
+    #    plt.xscale('log')
+    ax = plt.gca()
+#    ax.set_xscale('log')
+#    ax.set_xticks(desired_ticks)
+    plt.xlabel("$\\rho$")
+    plt.ylabel("Weight of MST of negated graph")
+    plt.legend()
+    plt.grid(True)
+
+#@warnings.deprecated
 def init_plot(results, rho_values, meta_params):
     """
     Requires a plt.show() later.

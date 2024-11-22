@@ -135,9 +135,7 @@ def compute_input_perturbation(G, noise_fkt, alg='prim'):
         weights += (old_weights[(u, v)])  # MST on the ground graph
     return weights
 
-
-
-def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=True, run_sealfon=True, run_pamst=True, run_our=True):
+def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1]):
     """
     The main entrypoint for the experiments.
      Allows to run a subset of MST algorithm
@@ -145,6 +143,7 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
     :param G: NetworkX Graph
     :param sensitivity: the $\ell_\infty$v sensitivity of the graph.
     :param rho_values:
+    :param runs: number of repeating runs of this experiment
     :param run_real: Flag indicating whether the REAL mst should be computed
     :param run_sealfon: Flag indicating whether we run SEALFON's postprocessing alg.
     :param run_pamst: Flag indicating whether to run PAMST
@@ -152,46 +151,38 @@ def compute_approximate_dp(G: Graph, sensitivity=1, rho_values=[1], run_real=Tru
     :return:
     """
     n = G.number_of_nodes()  # Does it work?
-    results = {}
+    results = dict(real=[], pamst=[], sealfon=[], our=[])
 
     ### Real Spanning Tree ###
     # Simply make an array to make visualization easier
-    results['real'] = []
     start = perf_counter_ns()
-    if run_real:
-        results['real'] = [compute_real_mst_weight(G)] * len(rho_values)
+    results['real'] = [compute_real_mst_weight(G)] * len(rho_values)
     logger.debug(f'computing the real MST took: {perf_counter_ns() - start}')
 
     ### Pinot's PAMST Algorithm ###
-    results['pamst'] = []
-    if run_pamst:
-        for rho in rho_values:
-            start = perf_counter_ns()
-            noise_level = (2 * sensitivity * math.sqrt((n - 1) / (2 * rho)))  # Should be ok
-            pamst_edges = pt.pamst(G.copy(),
-                                noise_scale=noise_level)  # Gives an iterator which should only be executed once!
-            results['pamst'] += [pt.comp_mst_weight(pamst_edges)]
-            logger.debug(f'computing PAMST MST took: {perf_counter_ns() - start}')
+    for rho in rho_values:
+        start = perf_counter_ns()
+        noise_level = (2 * sensitivity * math.sqrt((n - 1) / (2 * rho)))  # Should be ok
+        pamst_edges = pt.pamst(G.copy(),
+                            noise_scale=noise_level)  # Gives an iterator which should only be executed once!
+        results['pamst'] += [pt.comp_mst_weight(pamst_edges)]
+        logger.debug(f'computing PAMST MST took: {perf_counter_ns() - start}')
 
     ### Sealfon's Post Processing Technique ###
-    results['sealfon'] = []
-    if run_sealfon:
-        for rho in rho_values:
-            start = perf_counter_ns()
-            std_deviation = sensitivity * math.sqrt(G.number_of_edges() / (2 * rho))
-            gaussNoise = lambda edge_weight: edge_weight + np.random.normal(0, std_deviation)
-            results['sealfon'] += [compute_input_perturbation(G.copy(), gaussNoise)]
-            logger.debug(f'computing SEALFON took: {perf_counter_ns() - start}')
+    for rho in rho_values:
+        start = perf_counter_ns()
+        std_deviation = sensitivity * math.sqrt(G.number_of_edges() / (2 * rho))
+        gaussNoise = lambda edge_weight: edge_weight + np.random.normal(0, std_deviation)
+        results['sealfon'] += [compute_input_perturbation(G.copy(), gaussNoise)]
+        logger.debug(f'computing SEALFON took: {perf_counter_ns() - start}')
 
     ### Finally: Our Approach ###
-    results['our'] = []
-    if run_our:
-        for rho in rho_values:
-            start = perf_counter_ns()
-            noise_lambda = math.sqrt(2 * rho / (n - 1)) / (2 * sensitivity)
-            expNoise = lambda edge_weight: np.log(np.random.exponential(1)) + noise_lambda * edge_weight
-            results['our'] += [compute_input_perturbation(G.copy(), expNoise, alg='prim')]
-            logger.debug(f'computing OUR APPROACH took: {perf_counter_ns() - start}')
+    for rho in rho_values:
+        start = perf_counter_ns()
+        noise_lambda = math.sqrt(2 * rho / (n - 1)) / (2 * sensitivity)
+        expNoise = lambda edge_weight: np.log(np.random.exponential(1)) + noise_lambda * edge_weight
+        results['our'] += [compute_input_perturbation(G.copy(), expNoise, alg='prim')]
+        logger.debug(f'computing OUR APPROACH took: {perf_counter_ns() - start}')
     return results
 
 def compute_different_densities_approximate_dp(n, edge_probabilities, sensitivity, maximum_edge_weight, rho, number_of_runs=1):

@@ -28,12 +28,11 @@ def save_plot_and_data_experiment_one(file_name, results_complete, edge_probabil
     plt.savefig(file_name + ".png")
     plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
 
-def save_plot_and_data_experiment_two(file_name, results_complete, edge_probabilities, rho_values, n, flip_p, sensitivity):
+def save_plot_and_data_experiment_two(file_name, results_complete, rho_values, n, flip_p, sensitivity):
     save_results(filename=file_name + ".npy", results=
     {
         "results": results_complete,
         "rho_values": rho_values,
-        "edge_probabilities": edge_probabilities,
         "n": n,
         "flip_p": flip_p,
         "sensitivity": sensitivity
@@ -42,7 +41,7 @@ def save_plot_and_data_experiment_two(file_name, results_complete, edge_probabil
     plt.savefig(file_name + ".pdf", format='pdf', bbox_inches='tight')
 
 
-def save_plot_and_data_experiment_two(results_complete, rho_values, n, sensitivity):
+def save_plot_and_data_experiment_three(results_complete, rho_values, n, sensitivity):
     file_name = f'save/mutual-information_n{n}_sens{sensitivity}'
     save_results(filename=file_name + ".npy", results=
     {
