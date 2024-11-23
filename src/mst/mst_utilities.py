@@ -54,6 +54,16 @@ def generate_random_erdos_reny_graph(n=1, p=1, max_edge_weight=1, force_connecte
     return G
 
 
+def mutual_information(p, k):
+    """
+    Weights of the random process decribed in experiment 2
+    :param p:
+    :param k:
+    :return:
+    """
+    p00 = (1 + (1 - 2 * p) ** k)
+    p10 = (1 - (1 - 2 * p) ** k)
+    return 1 / 2 * p00 * np.log2(p00) + 1 / 2 * p10 * np.log2(p10)
 def generate_mi_instance(n, p):
     """
     Generates a realistic MI scenario: Given a dataset with n features X_i,
@@ -67,9 +77,7 @@ def generate_mi_instance(n, p):
     for i in range(0, n):
         for j in range(0, i):
             k = i - j
-            p00 = (1 + (1 - 2 * p) ** k)
-            p10 = (1 - (1 - 2 * p) ** k)
-            mi = 1 / 2 * p00 * np.log2(p00) + 1 / 2 * p10 * np.log2(p10)
+            mi = mutual_information(p, k)
             A[i][j] = -mi  # Minimum Spanning Tree Finds Max Mutual Information
             A[j][i] = -mi
     G: Graph = nx.from_numpy_array(A=A, parallel_edges=False, create_using=nx.Graph)
