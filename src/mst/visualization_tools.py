@@ -26,6 +26,7 @@ def init_plot_exp_three(df, meta_params):
     :return:
     """
 
+    sns.set_style("ticks")
     plt.figure(figsize=(12, 8))
     aggregated = df.groupby(['rho', 'alg'])['value'].agg(['median', 'min', 'max']).reset_index()
     for alg_name, group in aggregated.groupby('alg'):
@@ -33,15 +34,15 @@ def init_plot_exp_three(df, meta_params):
         plt.fill_between(group['rho'], group['min'], group['max'], alpha=0.2)  # Matching fill color
 
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.title(f'Mutual Information Graph with  \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$')
+    plt.title(f'Mutual Information Graph with  \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$\n n = {meta_params["n"]}')
 
 #    desired_ticks = [minx, 10**-1, 10**0]
     #    plt.xscale('log')
     ax = plt.gca()
-#    ax.set_xscale('log')
+#    ax.set_yscale('log')
 #    ax.set_xticks(desired_ticks)
     plt.xlabel("$\\rho$")
-    plt.ylabel("Weight of MST of negated graph")
+    plt.ylabel("Weight MST (on negated graph)")
     plt.legend()
     plt.grid(True)
 

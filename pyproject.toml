@@ -5,13 +5,13 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "python_boilerplate"
 version = "0.1.0"
-description = "Experiements with Privately Releasing Minimum Spanning Trees"
+description = "Optimal "
 readme = "README.rst"
 authors = [
-  {name = "Lukas Retschmeier", email = "lure@di.ku.dk"}
+  {name = "Undisclosed Maintainers", email = "x@x.xx.xx"}
 ]
 maintainers = [
-  {name = "Lukas Retschmeier", email = "lure@di.ku.dk"}
+  {name = "Undisclosed Maintainers", email = "xx@xx.x.x"},
 ]
 classifiers = [
 
