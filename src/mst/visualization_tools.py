@@ -3,19 +3,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-def prepare_data_exp_three(results, rho_values):
+
+# Consts
+keys = {"pamst":"pamst", "real":"mst", "sealfon": "sealfon", "our":"our"}
+markers = {"pamst":"o", "real":"x", "sealfon": "*", "our":"X"}
+def prepare_data_exp_three(results, rho_values, rho_cutoff=float('inf')):
     """
     Highly specialst utility function.
     :param results:
     :rho_values: The range of rho values
     :return:
     """
-
     mi_results = []
-    for ix, p in enumerate(rho_values): # Try to inline this!
-        for i in range(len(results)):
-            for k in results[i].keys():
-                mi_results += [(dict(rho=p, alg=k, value=results[i][k][ix]))]
+    for ix, p in enumerate(rho_values):
+        if p < rho_cutoff:
+            for i in range(len(results)):
+                for k in results[i].keys():
+                    mi_results += [(dict(rho=p, alg=k, value=results[i][k][ix]))]
     return pd.DataFrame(list(mi_results))
 
 def init_plot_exp_three(df, meta_params):
@@ -30,11 +34,10 @@ def init_plot_exp_three(df, meta_params):
     plt.figure(figsize=(12, 8))
     aggregated = df.groupby(['rho', 'alg'])['value'].agg(['median', 'min', 'max']).reset_index()
     for alg_name, group in aggregated.groupby('alg'):
-        plt.plot(group['rho'], group['median'], label=f'{alg_name}', linewidth=1.5, marker="o", linestyle='-')  # Dashed line for distinctiveness
+        plt.plot(group['rho'], group['median'], label=f'{keys[alg_name]}', linewidth=1.5, marker=f'{markers[alg_name]}', linestyle='-')  # Dashed line for distinctiveness
         plt.fill_between(group['rho'], group['min'], group['max'], alpha=0.2)  # Matching fill color
-
     plt.grid(True, linestyle='--', alpha=0.7)
-    plt.title(f'Mutual Information Graph with  \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$\n n = {meta_params["n"]}')
+    plt.title(f'Mutual Information Graph with  \nwith $\\Delta_\\infty = {meta_params["sensitivity"]}$ and n = {meta_params["n"]}')
 
 #    desired_ticks = [minx, 10**-1, 10**0]
     #    plt.xscale('log')
@@ -43,7 +46,10 @@ def init_plot_exp_three(df, meta_params):
 #    ax.set_xticks(desired_ticks)
     plt.xlabel("$\\rho$")
     plt.ylabel("Weight MST (on negated graph)")
-    plt.legend()
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = [3,1,0,2]
+    plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order])
     plt.grid(True)
 
 #@warnings.deprecated
@@ -85,10 +91,10 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
         (figureX, figureY) = (index // columns, index % columns)
 
         axs[figureX][figureY].axis('on')
-        sns.lineplot(x=rho_values, y=[sealfon - real for sealfon, real in zip(sealfon, real)], marker='o',
+        sns.lineplot(x=rho_values, y=[sealfon - real for sealfon, real in zip(sealfon, real)], marker='*',
                      label="Sealfon",
                      ax=axs[figureX][figureY])
-        sns.lineplot(x=rho_values, y=[ours - real for ours, real in zip(our, real)], marker='o',
+        sns.lineplot(x=rho_values, y=[ours - real for ours, real in zip(our, real)], marker='X',
                      label="$\\textbf{Our}$",
                      ax=axs[figureX][figureY])
         sns.lineplot(x=rho_values, y=[pamst - real for pamst, real in zip(results['pamst'], real)], marker='o',
@@ -97,9 +103,10 @@ def init_multiplot(all_results, rho_values, meta_params, columns=2):
         axs[figureX][figureY].set_title(title)
         axs[figureX][figureY].set_xlabel("$\\rho$")
         axs[figureX][figureY].set_ylabel("MST Error")
-    # axs[figureX][figureY].set_yscale("log")
-    # axs[0].set_ylim([0,100])
-    # axs[index].set_ylabel("Additive Error")
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = [2,1,3]
+    plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order])
 
     plt.subplots_adjust(hspace = 0.4)
     return (fig, axs)
@@ -128,12 +135,13 @@ def init_plot_densities(df, meta_params, minx):
     """
     n, max_edge_weight = meta_params['n'], meta_params['max_edge_weight']
 
+    sns.set_style("ticks")
     plt.figure(figsize=(12, 8))
     df = normalize(df)
     aggregated = df.groupby(['p', 'type'])['normalized_value'].agg(['median', 'min', 'max']).reset_index()
 
-    for type_name, group in aggregated.groupby('type'):
-        plt.plot(group['p'], group['median'], label=f'{type_name}', linewidth=1.5, marker="o", linestyle='-')  # Dashed line for distinctiveness
+    for alg_name, group in aggregated.groupby('type'):
+        plt.plot(group['p'], group['median'], label=f'{keys[alg_name]}', linewidth=1.5, marker=f'{markers[alg_name]}', linestyle='-')  # Dashed line for distinctiveness
         plt.fill_between(group['p'], group['min'], group['max'], alpha=0.2)  # Matching fill color
     # Add gridlines for readability
     plt.grid(True, linestyle='--', alpha=0.7)
@@ -147,7 +155,10 @@ def init_plot_densities(df, meta_params, minx):
 
     plt.xlabel("density $p$")
     plt.ylabel("Normalized Weights")
-    plt.legend()
+
+    handles, labels = plt.gca().get_legend_handles_labels()
+    order = [3,1,0,2]
+    plt.legend([handles[idx] for idx in order],[labels[idx] for idx in order], markerscale=0.7)
     plt.grid(True)
 
 def convert_results(results):

@@ -64,7 +64,7 @@ def mutual_information(p, k):
     p00 = (1 + (1 - 2 * p) ** k)
     p10 = (1 - (1 - 2 * p) ** k)
     return 1 / 2 * p00 * np.log2(p00) + 1 / 2 * p10 * np.log2(p10)
-def generate_mi_instance(n, p):
+def generate_mi_instance(n, p, round_to=0):
     """
     Generates a realistic MI scenario: Given a dataset with n features X_i,
     we set X_i = 1- X_{i-1} w.p p and X_{i-1} otherwise
@@ -78,6 +78,7 @@ def generate_mi_instance(n, p):
         for j in range(0, i):
             k = i - j
             mi = mutual_information(p, k)
+            if round_to > 0: mi = round(mi, round_to)
             A[i][j] = -mi  # Minimum Spanning Tree Finds Max Mutual Information
             A[j][i] = -mi
     G: Graph = nx.from_numpy_array(A=A, parallel_edges=False, create_using=nx.Graph)
