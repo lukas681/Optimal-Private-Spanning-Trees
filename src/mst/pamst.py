@@ -3,8 +3,6 @@ import numpy as np
 from itertools import count
 from networkx import Graph
 
-# Also old, TODO Remove.
-
 ## Inspired by https://github.com/networkx/networkx/blob/main/networkx/algorithms/tree/mst.py
 # @nx._dispatch(edge_attrs="weight", preserve_edge_attrs="data")
 def pamst(G:Graph, noise_scale=1):

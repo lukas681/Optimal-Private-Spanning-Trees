@@ -3,7 +3,6 @@ import numpy as np
 import logging
 logger = logging.getLogger(__name__)
 
-# Ignore, Old things that might be reused.
 def encode_experiment_one(results, edge_probabilites, rho_values, n, maximum_edge_weight, sensitivity):
     return
 def save_results(results, filename="save/test.npy"):
